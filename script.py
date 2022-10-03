@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# This is so stupid but it helped kill an hour
+# This is so stupid, but it helped kill an hour
 import json
 import random
 import textwrap
@@ -41,6 +41,16 @@ def choose_spell(class_name):
         filteredData = [spell for spell in data if class_name in spell['class']]
         # Select random spell
         randomSpell = filteredData[random.randint(0, len(filteredData) - 1)]
+        # Check if Spell has been used
+        with open('used_spells.json') as file:
+            used_spells = json.load(file)
+            dif_spell = False
+            while not dif_spell:
+                for i in range(len(used_spells)):
+                    if used_spells[i]['name'] == randomSpell['name']:
+                        randomSpell = filteredData[random.randint(0, len(filteredData) - 1)]
+                    else:
+                        dif_spell = True
         # Print random spell
         return Color.GREEN + randomSpell['name'] + Color.END + "\n" + textwrap.fill(
             textwrap.shorten(randomSpell['desc'], width=300), width=100)
@@ -82,7 +92,21 @@ if __name__ == '__main__':
     # Main Loop
     while status is True:
         # Print random entry
-        print('\n' + Color.BOLD + choose_spell(choose_class()) + Color.END + '\n')
+        chosen_spell = choose_spell(choose_class())
+        print('\n' + Color.BOLD + chosen_spell + Color.END + '\n')
+        # Ask if spell should be added to used spells list
+        add = input('\n' + "Would you like to add this spell to the Used Spells List? " + " [" + Color.GREEN + 'y' + Color.END + '/' + Color.RED + 'n' + Color.END + ']' + "\n" ).lower()
+        if add == 'y':
+            with open('used_spells.json') as spells:
+                used_spells_list = json.load(spells)
+                chosen_spell = chosen_spell.partition('\n')[0]
+                chosen_spell = chosen_spell.replace("\x1b[0m", "")
+                chosen_spell = chosen_spell.replace("\x1b[92m", "")
+                used_spells_list.append({'name': chosen_spell})
+                print(used_spells_list)
+                with open('used_spells.json', "w+") as used_spell:
+                    json.dump(used_spells_list, used_spell)
+            print("Spell Added to Used Spells List")
         # Continue loop or break
         v = input(
             Color.BOLD + "Choose Another?" + Color.END + " [" + Color.GREEN + 'y' + Color.END + '/' + Color.RED + 'n' + Color.END + ']' + "\n").lower()
