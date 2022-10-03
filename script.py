@@ -103,7 +103,6 @@ if __name__ == '__main__':
                 chosen_spell = chosen_spell.replace("\x1b[0m", "")
                 chosen_spell = chosen_spell.replace("\x1b[92m", "")
                 used_spells_list.append({'name': chosen_spell})
-                print(used_spells_list)
                 with open('used_spells.json', "w+") as used_spell:
                     json.dump(used_spells_list, used_spell)
             print("Spell Added to Used Spells List")
